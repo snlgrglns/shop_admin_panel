@@ -35,6 +35,10 @@ class ProductService{
         return axios.delete(SIZE_API_BASE_URL+'/'+sizeId);
     }
 
+    deleteProductImage(imageId){
+        return axios.delete(IMAGE_API_BASE_URL+'/'+imageId);
+    }
+
     addColor(productColor){
         // console.log(productColor);
         return axios.post(COLOR_API_BASE_URL, productColor);

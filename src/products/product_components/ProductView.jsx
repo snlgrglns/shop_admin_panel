@@ -17,6 +17,7 @@ class ProductView extends Component {
             receivedProductImage:[],
         }
         this.deleteColor = this.deleteColor.bind(this);
+        this.deleteImage = this.deleteImage.bind(this);
         this.deleteSize = this.deleteSize.bind(this);   
         this.changeColorHandler=this.changeColorHandler.bind(this); 
         this.changeSizeHandler=this.changeSizeHandler.bind(this); 
@@ -43,7 +44,7 @@ class ProductView extends Component {
           formData.append("product_id", this.state.id);
          
           // Details of the uploaded file
-          console.log(this.state.productImage);
+        //   console.log(this.state.productImage);
           ProductService.uploadImage(formData).then(res=>{
             // this.props.history.push('/product/view/'+this.state.product.id);
             window.location.assign('/product/view/'+this.state.product.id);
@@ -95,6 +96,13 @@ class ProductView extends Component {
         });
     }
 
+    deleteImage(id){
+        ProductService.deleteProductImage(id).then(res=>{
+            // this.setState({colors: this.state.colors.filter(color=>color.id!==id)});
+            window.location.assign('/product/view/'+this.state.product.id);
+        });
+    }
+
     deleteSize(id){
         ProductService.deleteProductSize(id).then(res=>{
             this.setState({sizes: this.state.sizes.filter(size=>size.id!==id)});
@@ -114,19 +122,22 @@ class ProductView extends Component {
 
     getActiveImage(data) {
         // var data = this.state.receivedProductImage; 
-        var act_img = "";
+        var act_img = {};
         if(data && data.length){
             var d1 = data[0]||{};
-            act_img = d1.imagePath; 
+            act_img["id"] = d1.id;
+            act_img["imagePath"] = d1.imagePath;
             // console.log(d1);           
         }else{
-            act_img = "https://cdn-icons-png.flaticon.com/512/2748/2748558.png";
+            act_img["id"] = 0;
+            act_img["imagePath"] = "https://cdn-icons-png.flaticon.com/512/2748/2748558.png";
         }
         // console.log(act_img);
         return act_img;
       }
 
     render() {
+        var active_image = this.getActiveImage(this.state.receivedProductImage);
         var obj = [...this.state.prices];
                     obj.sort((a,b) => a.id - b.id);
         var last_price = obj[obj.length-1];
@@ -167,14 +178,18 @@ class ProductView extends Component {
                 <div className="col-12 col-sm-6">
                     <h3 className="d-inline-block d-sm-none">{this.state.product.name}</h3>
                     <div className="col-12">
-                    <img src={this.getActiveImage(this.state.receivedProductImage)} className="product-image" alt="Product Image" />
+                    <button type="button" className="remove_btn btn btn-tool" onClick={()=>this.deleteImage(active_image.id)} style={{color:"red", position: "absolute", right: "45px"}}><i className="fas fa-times"></i></button>
+                    <img src={active_image.imagePath} className="product-image" alt="Product Image" />
                     </div>
                     <div className="col-12 product-image-thumbs">
                         {/* <div className="product-image-thumb active"><img src={this.state.receivedProductImage[0].imagePath} alt="Product Image" /></div> */}
                         {
                         this.state.receivedProductImage.map(
                             path =>
-                            <div key={"product_img"+path.id} className="product-image-thumb"><img src={path.imagePath} alt="Product Image" /></div>
+                                <div key={"product_img"+path.id} className="product-image-thumb">
+                                    <button type="button" className="remove_btn btn btn-tool" onClick={()=>this.deleteImage(path.id)} style={{color:"red", right: "5px", top:"5px"}}><i className="fas fa-times"></i></button>
+                                    <img src={path.imagePath} alt="Product Image" ></img>
+                                </div>
                             )
                         }
                     </div>
