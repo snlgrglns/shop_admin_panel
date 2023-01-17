@@ -28,13 +28,22 @@ class ProductAdd extends Component {
         this.saveProduct = this.saveProduct .bind(this);
     }
 
-
+    
     saveProduct=(e)=>{
         e.preventDefault();
-        let productDetail = {name:this.state.name,description:this.state.description, status:1, productPrice:[{price: this.state.price}],productColor:this.state.colors,productSize:this.state.sizes,productImage:[{imagePath:this.state.image}]};
-        // alert(JSON.stringify(productDetail));
+        const productData = new FormData();
+        productData.append(
+            "productImageFile",
+            this.state.image,
+            this.state.image.name,
+          );
+        // let productDetail = {name:this.state.name,description:this.state.description, status:1, productPrice:[{price: this.state.price}],productColor:this.state.colors,productSize:this.state.sizes,productImage:[{imagePath:this.state.image}]};
+        let productDetail = {name:this.state.name,description:this.state.description, status:1, productPrice:[{price: this.state.price}],productColor:this.state.colors,productSize:this.state.sizes};        // alert(JSON.stringify(productDetail));
         // ProductService.createProduct(productDetail);
-        ProductService.createProduct(productDetail).then(res=>{
+        productData.append("productDetail", JSON.stringify(productDetail));
+        console.log(JSON.stringify(productDetail));
+
+        ProductService.createProduct(productData).then(res=>{
             this.props.history.push('/product/list');
         });
     }
@@ -43,9 +52,15 @@ class ProductAdd extends Component {
         this.setState({name: event.target.value});
     }
 
-    changeImageHandler=(event) => {
-        this.setState({image: event.target.value});
-    }
+    changeImageHandler = event => {     
+        // Update the state
+        this.setState({ image: event.target.files[0] });       
+    };
+
+
+    // changeImageHandler=(event) => {
+    //     this.setState({image: event.target.value});
+    // }
 
     changeDescriptionHandler=(event) => {
         this.setState({description: event.target.value});
@@ -92,7 +107,8 @@ class ProductAdd extends Component {
                         </div>
                         <div className="form-group">
                             <label htmlFor="exampleInputEmail1">Image</label>
-                            <input type="text" name="image" className="form-control" id="exampleInputEmail1" placeholder="Enter Image" onChange={this.changeImageHandler}/>
+                            <input accept='image/*' className='form-control' id="upload-image-field" type="file" onChange={this.changeImageHandler}/>
+                            {/* <input type="text" name="image" className="form-control" id="exampleInputEmail1" placeholder="Enter Image" onChange={this.changeImageHandler}/> */}
                         </div>
                         <div className="form-group">
                             <label htmlFor="exampleInputEmail1">Description</label>

@@ -11,8 +11,8 @@ class ProductService{
         return axios.get(PRODUCT_API_BASE_URL);
     }
 
-    createProduct(product){
-        return axios.post(PRODUCT_API_BASE_URL, product);
+    createProduct(productData){
+        return axios.post(PRODUCT_API_BASE_URL, productData);
     }
 
     getProductById(productId){
